@@ -6,7 +6,7 @@ This approach has been used to model the 2020 cov-19 outbreak in China to good e
  
 
 ## Getting Started
-Instructions will get the project up and running on your local machine for data analysis and development.
+Instructions to get the project up and running on your local machine for data analysis and development.
 
 ### Prerequisites
 * python >= 3.7, tested. lower versions might work as well
