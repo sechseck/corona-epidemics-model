@@ -88,15 +88,15 @@ def iniguess(firstCaseCount):
 def sir_ode(t,SIR,beta,gamma):
     """The SIR  differential equation
 
-    :param t: TODO
+    :param t: the time variable, not used
 
-    :param SIR: TODO
+    :param SIR: current values of S,I,R
 
     :param beta: Model transition probability
 
     :param gamme: Model transisiton probability
 
-    :returns: TODO
+    :returns: solutions for dS,dI,dR as functions of time
     """
     S = SIR[0]
     I = SIR[1]
@@ -111,13 +111,13 @@ def sir_ode(t,SIR,beta,gamma):
 
 
 def optSolveOde(bgS,IRC):
-    """Solve differnetial equation TODO
+    """Solve differential equation and compute deviation from observed values
 
-    :param bgS: TODO
+    :param bgS: beta,gamma,S are variables for the differential equation
 
-    :param IRC: TODO
+    :param IRC: I,R and measurements C are treated as constant
 
-    :returns: TODO
+    :returns: the euclidean norm of the differences between model estimates and observed values
     """
     C = IRC[2:]
     tmax = len(C)
@@ -127,13 +127,13 @@ def optSolveOde(bgS,IRC):
 
 
 def solveode(SIR,bgt):
-    """Solve the sir equations for the time-dependent S,I,R values
+    """Solve the differential equations
 
-    :param C: Observed case numbers
+    :param SIR: time-dependent S,I,R values
 
-    :param bgt: TODO
+    :param bgt: beta, gamma and maximum date tmax
 
-    :returns: TODO
+    :returns: time index t, S,I,R as time-dependent function values
     """
     S0 = SIR[0]
     I0 = SIR[1]
@@ -143,7 +143,7 @@ def solveode(SIR,bgt):
     tmax = bgt[2]
 
     # Solve the SIR ode for S,I,R, given a beta and gamma
-    sir_sol = solve_ivp(sir_ode,(0,tmax),(S0,I0,R0),args=(beta,gamma), \
+    sir_sol = solve_ivp(sir_ode,(0,tmax),(S0,I0,R0),args=(beta,gamma),
                         t_eval=range(tmax))
     t =  sir_sol['t']
     S = sir_sol['y'][0]
@@ -161,7 +161,7 @@ def plot_results(results, C):
     """
     fig, ax = plt.subplots(1,3)
     tmax = 2*len(C)
-    (t, S, I, R) = solveode((results['S'],results['I0'],results['R0']), \
+    (t, S, I, R) = solveode((results['S'],results['I0'],results['R0']),
                             (results['beta'],results['gamma'],tmax))
 
     # Plot data and set axis subplot titles
@@ -183,7 +183,7 @@ if __name__ == "__main__":
 
     # Parse commmand line arguments
     parser = argparse.ArgumentParser()
-    parser.add_argument("-r", metavar="REGION", default="china", \
+    parser.add_argument("-r", metavar="REGION", default="china",
                         dest="region",
                         help="specify region for which to solve model")
     args = parser.parse_args()
