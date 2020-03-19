@@ -5,7 +5,7 @@
 Calculates the expected total case numbers, number of infected over time and number of initially susceptible individuals. It estimates the parameters by solving the SIR differential equations and then using an optimization procedure to find the set of parameters that fit the data observations best.
 
 This approach has been used to model the 2020 cov-19 outbreak in China to good effect up to March and should be applicable to other countries as well. Check the reference section for more information. Everything is provided "as is" and comes without any warranty, to the extent permitted by applicable law. Use at your own risk.
- 
+
 
 ## Getting Started
 Instructions to get the project up and running on your local machine for data analysis and development.
@@ -20,7 +20,7 @@ Instructions to get the project up and running on your local machine for data an
 
 ### Installing
 
-put the source file and the case_numbers.csv in the same directory, e.g.
+Put the source file and the case_numbers.csv in the same directory, e.g.
 ```
 $ls
 corona_sir.py
@@ -29,7 +29,7 @@ case_numbers.csv
 
 ## Running the test
 
-run corona_sir.py using python and the original case_numbers.csv.
+Run corona_sir.py using python and the original case_numbers.csv.
 You should get graph and console output.
 
 ```
@@ -52,7 +52,7 @@ If you get these results, you have a working setup. Congratulations!
 * beta: transition rate S->I
 * gamma: transition rate I->R
 
-remark: the model does not distinguish between successful recovery or a fatality. 'recovered' is just any live or dead individual that is immune to infection. A first indication is therefore the number of susceptible individuals at the end of the time horizon, as these are guaranteed to be alive.
+Remark: The model does not distinguish between successful recovery or a fatality. 'recovered' is just any live or dead individual that is immune to infection. A first indication is therefore the number of susceptible individuals at the end of the time horizon, as these are guaranteed to be alive.
 
 ### Graphs
 The unit of the x-Axes of the graphs is number of days as given in case_numbers.csv.
@@ -66,7 +66,7 @@ The unit of the y-Axes is the number of individuals in either S,I or R state.
 
 The first line of case_numbers.csv needs to contain the line
 ```
-country;date;cases
+region;date;cases
 ```
 add data at the end using:
 ```
@@ -82,24 +82,25 @@ new_region;17.01.2020;45
 new_region;18.01.2020;62
 new_region;19.01.2020;121
 ```
-In corona_sir.py, change 
+In corona_sir.py, change
 '''
-country = 'china'
+region = 'china'
 '''
 to
 '''
-country = 'new_region'
+region = 'new_region'
 '''
 to the region you just introduced to analyze the new region
 
 
 ## Code available at
 
-The latest version is available from [github](https://github.com/sechseck/epidemics). 
+The latest version is available from [github](https://github.com/sechseck/epidemics).
 
 ## Authors
 
 **sechseck:** [sechseck](https://github.com/sechseck)
+**fsch2:** [fsch2](https://github.com/fsch2)
 
 ## License
 
