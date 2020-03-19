@@ -1,3 +1,5 @@
+![alt text](https://github.com/sechseck/epidemics/blob/master/SIR_Figure_1.png "SIR graphs")
+
 # Estimating the SIR epidemic model from observed case numbers
 
 Calculates the expected total case numbers, number of infected over time and number of initially susceptible individuals. It estimates the parameters by solving the SIR differential equations and then using an optimization procedure to find the set of parameters that fit the data observations best.
