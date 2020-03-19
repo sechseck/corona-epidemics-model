@@ -9,24 +9,42 @@ from numpy import asarray,hstack
 import matplotlib.pyplot as plt
 import pprint
 
-#load data from file
+
 def loadData(country):
+    """Load case data for country from CSV file
+
+    :param country: Name of the country for which to load data
+
+    :returns: Case data for country as pandas DataFrame
+    """
     filename = r'./case_numbers.csv'
     data = pd.read_csv(filename, delimiter=';')
     C = data[data['country']==country]['cases'].to_numpy()
     return C
 
-#parameter estimation from data, the routine that fits observation to model
-#input params: C: the time series of observed cases
+
 def parmest(C):
+    """Estimate model parameters based on data
+
+    This function fits the observation data to the model.
+
+    :param C: The time series of observed cases
+
+    :returns: Parameters estimates for 'beta', 'gamma', 'S',
+        'I0', 'R0' in a dict
+    """
     firstCaseCount = C[0]
     [betaGuess,gammaGuess,SGuess,I0,R0] = iniguess(firstCaseCount)
 
-    #mangle I0,R0 and array C into 1-d ndarray
+    # Mangle I0, R0 and array C into 1-d ndarray
     parmArray = hstack((asarray([I0,R0]),C))
 
     optOptions = {'maxiter': 20000, 'disp': False}
-    optRes = minimize(optSolveOde,(betaGuess,gammaGuess,SGuess),method = 'Nelder-Mead',args=parmArray,options=optOptions) #find beta, gamma and S that fit the data C best given I0,R0
+
+    #Find beta, gamma and S that fit the data C best given I0,R0
+    optRes = minimize(optSolveOde,(betaGuess,gammaGuess,SGuess), \
+                      method = 'Nelder-Mead', args=parmArray, \
+                      options=optOptions)
     if optRes.success:
         [beta, gamma, S] = optRes.x
     else:
@@ -35,44 +53,91 @@ def parmest(C):
 
     return {'beta':beta, 'gamma':gamma, 'S':S, 'I0': I0, 'R0': R0}
 
-#guess initial parameters for parest parameter estimation
+
 def iniguess(firstCaseCount):
+    """Guess initial parameters for parameter estimation
+
+    :param firstCaseCount: Number of infected at time t0
+
+    :returns: Initial parameters guess for 'beta', 'gamma', 'S',
+        'I0', 'R0' in a dict
+    """
     betaGuess = 10
     gammaGuess = 10
-    SGuess = 1e9-firstCaseCount #number of susceptible people at t0. normalized to one, but using a big number for numerical stability
-    I0 = firstCaseCount #number of infected at t0
-    R0 = 0 #number of recovered at t0
+
+    # Number of susceptible people at t0. normalized to one,
+    # but using a big number for numerical stability
+    SGuess = 1e9-firstCaseCount
+
+    # Number of infected at t0
+    I0 = firstCaseCount
+
+    # Number of recovered at t0
+    R0 = 0
+
     return (betaGuess,gammaGuess,SGuess,I0,R0)
 
-#the sir differential equation
+
 def sir_ode(t,SIR,beta,gamma):
+    """The SIR  differential equation
+
+    :param t: TODO
+
+    :param SIR: TODO
+
+    :param beta: Model transition probability
+
+    :param gamme: Model transisiton probability
+
+    :returns: TODO
+    """
     S = SIR[0]
     I = SIR[1]
     R = SIR[2]
     N = S + I + R
-    # ODEs
+
+    # Define ODEs
     dS = -beta*I*S/N
     dI = beta*S*I/N-gamma*I
     dR = gamma*I
     return [dS,dI,dR]
 
+
 def optSolveOde(bgS,IRC):
+    """Solve differnetial equation TODO
+
+    :param bgS: TODO
+
+    :param IRC: TODO
+
+    :returns: TODO
+    """
     C = IRC[2:]
     tmax = len(C)
     (t,S,I,R) = solveode((bgS[2],IRC[0],IRC[1]), (bgS[0],bgS[1],tmax))
     deviation = norm(C - (I + R))
     return deviation
 
-#solve the sir equations for the time-dependent S,I,R values
-# C: observed case numbers
+
 def solveode(SIR,bgt):
+    """Solve the sir equations for the time-dependent S,I,R values
+
+    :param C: Observed case numbers
+
+    :param bgt: TODO
+
+    :returns: TODO
+    """
     S0 = SIR[0]
     I0 = SIR[1]
     R0 = SIR[2]
     beta = bgt[0]
     gamma = bgt[1]
     tmax = bgt[2]
-    sir_sol = solve_ivp(sir_ode,(0,tmax),(S0,I0,R0),args=(beta,gamma),t_eval=range(tmax)) #solve the sir ode for S,I,R given a beta and gamma
+
+    # Solve the SIR ode for S,I,R, given a beta and gamma
+    sir_sol = solve_ivp(sir_ode,(0,tmax),(S0,I0,R0),args=(beta,gamma), \
+                        t_eval=range(tmax))
     t =  sir_sol['t']
     S = sir_sol['y'][0]
     I = sir_sol['y'][1]
@@ -81,10 +146,18 @@ def solveode(SIR,bgt):
 
 
 def plot_results(results,C):
+    """Create a plot visualizing curves for S, I and R
+
+    :param results: Parameter estimation results
+
+    :param C: Observed case numbers
+    """
     fig, ax = plt.subplots(1,3)
     tmax = 2*len(C)
-    (t, S, I, R) = solveode((results['S'],results['I0'],results['R0']),(results['beta'],results['gamma'],tmax))
+    (t, S, I, R) = solveode((results['S'],results['I0'],results['R0']), \
+                            (results['beta'],results['gamma'],tmax))
 
+    # Plot data and set axis subplot titles
     ax[0].plot(t,S)
     ax[0].set_title('S')
     ax[1].plot(t,I)
