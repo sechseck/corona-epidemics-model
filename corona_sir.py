@@ -21,7 +21,7 @@ def loadData(region):
     :returns: Case data for region as pandas DataFrame
     """
     filename = r'./case_numbers.csv'
-    data = pd.read_csv(filename, delimiter=';')
+    data = pd.read_csv(filename, delimiter=';', comment="#")
     C = data[data['region']==region]['cases'].to_numpy()
 
     # If no cases are found, throw an error

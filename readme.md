@@ -82,16 +82,10 @@ new_region;17.01.2020;45
 new_region;18.01.2020;62
 new_region;19.01.2020;121
 ```
-In corona_sir.py, change
-'''
-region = 'china'
-'''
-to
-'''
-region = 'new_region'
-'''
-to the region you just introduced to analyze the new region
-
+The region to analyze currently defaults to 'china'. This can be changed by using the -r commmand line argument. So to select the case numbers for 'new_region', run
+```
+python corona_sir.py -r new_region
+```
 
 ## Code available at
 
@@ -99,8 +93,8 @@ The latest version is available from [github](https://github.com/sechseck/epidem
 
 ## Authors
 
-**sechseck:** [sechseck](https://github.com/sechseck)
-**fsch2:** [fsch2](https://github.com/fsch2)
+- **sechseck:** [sechseck](https://github.com/sechseck)
+- **fsch2:** [fsch2](https://github.com/fsch2)
 
 ## License
 
