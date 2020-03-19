@@ -10,6 +10,7 @@ import pandas as pd
 from numpy.linalg import norm
 from numpy import asarray,hstack
 import matplotlib.pyplot as plt
+from matplotlib import rcParams
 
 
 def loadData(region):
@@ -151,27 +152,50 @@ def solveode(SIR,bgt):
     R = sir_sol['y'][2]
     return (t, S, I, R)
 
-
-def plot_results(results, C):
+def plot_SIR(t, S, I, R):
     """Create a plot visualizing curves for S, I and R
-
-    :param results: Parameter estimation results
-
-    :param C: Observed case numbers
+    :param t: date numbers for S,I,R
+    :param S: number of susceptible individuals as a function of t
+    :param I: number of infected individuals as a function of t
+    :param R: number of recovered (healthy or dead) as a function of t
+    :return: nothing, creates a plot
     """
+
     fig, ax = plt.subplots(1,3)
-    tmax = 2*len(C)
-    (t, S, I, R) = solveode((results['S'],results['I0'],results['R0']),
-                            (results['beta'],results['gamma'],tmax))
 
     # Plot data and set axis subplot titles
     ax[0].plot(t,S)
-    ax[0].set_title('S')
+    ax[0].set_title('S(usceptible)')
+    ax[0].set_xlabel('day count')
+    ax[0].set_ylabel('number of individuals')
     ax[1].plot(t,I)
-    ax[1].set_title('I')
+    ax[1].set_title('I(nfected)')
+    ax[1].set_xlabel('day count')
+    ax[1].set_ylabel('number of individuals')
     ax[2].plot(t,R)
-    ax[2].set_title('R')
-    plt.show()
+    ax[2].set_title('R(ecovered or Dead)')
+    ax[2].set_xlabel('day count')
+    ax[2].set_ylabel('number of individuals')
+
+def plot_goodness_of_fit(t, S, I, R, tC, C):
+    """Create a plot visualizing curves for S, I and R
+    :param t: date numbers for S,I,R
+    :param S: number of susceptible individuals as a function of t, not needed here
+    :param I: number of infected individuals as a function of t
+    :param R: number of recovered (healthy or dead) as a function of t
+    :param tC: date numbers for C
+    :param C: observed case numbers
+    :return: nothing, creates a plot
+    """
+    fig, ax = plt.subplots()
+
+    markerSize = 2.6*rcParams['lines.markersize'] ** 2
+    ax.scatter(tC,C,s=markerSize,c='red')
+    ax.plot(t,I+R)
+
+    ax.set_title('predicted and observed case numbers')
+    ax.set_xlabel('day count')
+    ax.set_ylabel('case number')
 
 
 if __name__ == "__main__":
@@ -194,4 +218,10 @@ if __name__ == "__main__":
     results = parmest(C)
     pp = pprint.PrettyPrinter(indent=4)
     pp.pprint(results)
-    plot_results(results, C)
+    #solve for S,I,R given the estimated parameters Expectation(S0),beta,gamma
+    tmax = 2*len(C)
+    (t, S, I, R) = solveode((results['S'],results['I0'],results['R0']),
+                            (results['beta'],results['gamma'],tmax))
+    plot_SIR(t, S, I, R)
+    plot_goodness_of_fit(t, S, I, R, range(len(C)), C)
+    plt.show()
