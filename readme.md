@@ -114,4 +114,4 @@ https://en.wikipedia.org/wiki/Compartmental_models_in_epidemiology#The_SIR_model
 
 ## Acknowledgments
 
-* A big Thank You goes to Milan Batista from Ljubljana for his excellent article. Thanks a lot!
+* A big Thank You goes to Milan Batista from Ljubljana for his excellent article. Thanks a lot, hvala lepa!
