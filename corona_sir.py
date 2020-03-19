@@ -98,6 +98,3 @@ results = parmest(C)
 pp = pprint.PrettyPrinter(indent=4)
 pp.pprint(results)
 plot_results(results,C)
-
-
-
