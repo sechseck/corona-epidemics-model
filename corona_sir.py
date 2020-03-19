@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+
+import sys
 from scipy.integrate import solve_ivp
 from scipy.optimize import minimize
 import pandas as pd
@@ -90,11 +93,18 @@ def plot_results(results,C):
     ax[2].set_title('R')
     plt.show()
 
-#main script
 
-country = 'china'
-C=loadData(country)
-results = parmest(C)
-pp = pprint.PrettyPrinter(indent=4)
-pp.pprint(results)
-plot_results(results,C)
+if __name__ == "__main__":
+
+    # Script only tested with Python > 3.7
+    if(not sys.version_info >= (3, 7)):
+        print("This script requires at least Python 3.7. Exiting.")
+        sys.exit(1)
+
+    # Estimate parameters for SIR model and display results
+    country = 'china'
+    C = loadData(country)
+    results = parmest(C)
+    pp = pprint.PrettyPrinter(indent=4)
+    pp.pprint(results)
+    plot_results(results,C)
