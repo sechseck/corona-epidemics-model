@@ -8,7 +8,7 @@ import pprint
 
 #load data from file
 def loadData(country):
-    filename = r'./fallzahlen.csv'
+    filename = r'./case_numbers.csv'
     data = pd.read_csv(filename, delimiter=';')
     C = data[data['country']==country]['cases'].to_numpy()
     return C
@@ -34,8 +34,8 @@ def parmest(C):
 
 #guess initial parameters for parest parameter estimation
 def iniguess(firstCaseCount):
-    betaGuess = 1/0.00267103
-    gammaGuess = 1/0.00267232
+    betaGuess = 10
+    gammaGuess = 10
     SGuess = 1e9-firstCaseCount #number of susceptible people at t0. normalized to one, but using a big number for numerical stability
     I0 = firstCaseCount #number of infected at t0
     R0 = 0 #number of recovered at t0
