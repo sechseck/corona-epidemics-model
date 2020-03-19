@@ -1,25 +1,32 @@
 #!/usr/bin/env python3
 
 import sys
+import argparse
+import pprint
+
 from scipy.integrate import solve_ivp
 from scipy.optimize import minimize
 import pandas as pd
 from numpy.linalg import norm
 from numpy import asarray,hstack
 import matplotlib.pyplot as plt
-import pprint
 
 
-def loadData(country):
-    """Load case data for country from CSV file
+def loadData(region):
+    """Load case data for region from CSV file
 
-    :param country: Name of the country for which to load data
+    :param region: Name of the region for which to load data
 
-    :returns: Case data for country as pandas DataFrame
+    :returns: Case data for region as pandas DataFrame
     """
     filename = r'./case_numbers.csv'
     data = pd.read_csv(filename, delimiter=';')
-    C = data[data['country']==country]['cases'].to_numpy()
+    C = data[data['region']==region]['cases'].to_numpy()
+
+    # If no cases are found, throw an error
+    if len(C) == 0:
+        print("Found 0 datapoints for region {}, terminating".format(region))
+        raise SystemExit(3)
     return C
 
 
@@ -48,8 +55,8 @@ def parmest(C):
     if optRes.success:
         [beta, gamma, S] = optRes.x
     else:
-        print ('Optimzation did not converge, terminating')
-        raise SystemExit
+        print('Optimzation did not converge, terminating')
+        raise SystemExit(2)
 
     return {'beta':beta, 'gamma':gamma, 'S':S, 'I0': I0, 'R0': R0}
 
@@ -98,7 +105,7 @@ def sir_ode(t,SIR,beta,gamma):
 
     # Define ODEs
     dS = -beta*I*S/N
-    dI = beta*S*I/N-gamma*I
+    dI = beta*S*I/N - gamma*I
     dR = gamma*I
     return [dS,dI,dR]
 
@@ -114,7 +121,7 @@ def optSolveOde(bgS,IRC):
     """
     C = IRC[2:]
     tmax = len(C)
-    (t,S,I,R) = solveode((bgS[2],IRC[0],IRC[1]), (bgS[0],bgS[1],tmax))
+    (t, S, I, R) = solveode((bgS[2], IRC[0], IRC[1]), (bgS[0], bgS[1], tmax))
     deviation = norm(C - (I + R))
     return deviation
 
@@ -142,10 +149,10 @@ def solveode(SIR,bgt):
     S = sir_sol['y'][0]
     I = sir_sol['y'][1]
     R = sir_sol['y'][2]
-    return (t,S,I,R)
+    return (t, S, I, R)
 
 
-def plot_results(results,C):
+def plot_results(results, C):
     """Create a plot visualizing curves for S, I and R
 
     :param results: Parameter estimation results
@@ -171,13 +178,20 @@ if __name__ == "__main__":
 
     # Script only tested with Python > 3.7
     if(not sys.version_info >= (3, 7)):
-        print("This script requires at least Python 3.7. Exiting.")
+        print("This script requires at least Python 3.7, terminating.")
         sys.exit(1)
 
+    # Parse commmand line arguments
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-r", metavar="REGION", default="china", \
+                        dest="region",
+                        help="specify region for which to solve model")
+    args = parser.parse_args()
+
     # Estimate parameters for SIR model and display results
-    country = 'china'
-    C = loadData(country)
+    region = args.region
+    C = loadData(region)
     results = parmest(C)
     pp = pprint.PrettyPrinter(indent=4)
     pp.pprint(results)
-    plot_results(results,C)
+    plot_results(results, C)
