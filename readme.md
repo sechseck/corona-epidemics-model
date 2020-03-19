@@ -13,9 +13,9 @@ Instructions to get the project up and running on your local machine for data an
 ### Prerequisites
 * python 3.7 tested. other versions might work as well
 * scipy >= 1.4.1 important, will fail if lower versions are used
-* pandas
-* numpy
-* matplotlib.pyplot
+* pandas 0.25.3 tested
+* numpy 1.18.1 tested
+* matplotlib.pyplot  3.2.0rc1 tested
 
 
 ### Installing
@@ -46,8 +46,8 @@ The numbers from the console should be equal or very similar to:
 If you get these results, you have a working setup. Congratulations!
 
 ## Interpretation of the results
-* I0: number of infected individuals at day 0, taken from case_numbers.csv
-* R0: number of recovered individuals at day 0 (zero for all intents and purposes)
+* I0: number of infected individuals at day 1, taken from case_numbers.csv
+* R0: number of recovered individuals at day 1 (zero for all intents and purposes)
 * S: estimated number of susceptible individuals, i.e. able to become infected due to proximity and susceptibility
 * beta: transition rate S->I
 * gamma: transition rate I->R
