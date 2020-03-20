@@ -2,7 +2,7 @@
 
 # Estimating the SIR epidemic model from observed case numbers Corona / Covid-19
 ![alt text](https://github.com/sechseck/epidemics/blob/master/PvsO_Figure_2.png "goodness of fit")
-
+<br/><br/>
 Calculates the expected total case numbers, number of infected over time and number of initially susceptible individuals. It estimates the parameters by solving the SIR differential equations and then using an optimization procedure to find the set of parameters that fit the data observations best.
 
 This approach has been used to model the 2020 cov-19 outbreak in China to good effect up to March and should be applicable to other countries as well. Check the reference section for more information. Everything is provided "as is" and comes without any warranty, to the extent permitted by applicable law. Use at your own risk.
