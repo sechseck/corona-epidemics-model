@@ -13,20 +13,20 @@ import matplotlib.pyplot as plt
 from matplotlib import rcParams
 
 
-def loadData(region):
-    """Load case data for region from CSV file
+def loadData(country):
+    """Load case data for country from CSV file
 
-    :param region: Name of the region for which to load data
+    :param country: Name of the region for which to load data
 
     :returns: Case data for region as pandas DataFrame
     """
     filename = r'./case_numbers.csv'
     data = pd.read_csv(filename, delimiter=';', comment="#")
-    C = data[data['region']==region]['cases'].to_numpy()
+    C = data[data['country'] == country]['cases'].to_numpy()
 
     # If no cases are found, throw an error
     if len(C) == 0:
-        print("Found 0 datapoints for region {}, terminating".format(region))
+        print("Found 0 datapoints for region {}, terminating".format(country))
         raise SystemExit(3)
     return C
 
@@ -152,6 +152,7 @@ def solveode(SIR,bgt):
     R = sir_sol['y'][2]
     return (t, S, I, R)
 
+
 def plot_SIR(t, S, I, R):
     """Create a plot visualizing curves for S, I and R
     :param t: date numbers for S,I,R
@@ -177,7 +178,7 @@ def plot_SIR(t, S, I, R):
     ax[2].set_xlabel('day count')
     ax[2].set_ylabel('number of individuals')
 
-def plot_goodness_of_fit(t, S, I, R, tC, C):
+def plot_goodness_of_fit(t, S, I, R, tC, C, region):
     """Create a plot visualizing curves for S, I and R
     :param t: date numbers for S,I,R
     :param S: number of susceptible individuals as a function of t, not needed here
@@ -193,7 +194,7 @@ def plot_goodness_of_fit(t, S, I, R, tC, C):
     ax.scatter(tC,C,s=markerSize,c='red')
     ax.plot(t,I+R)
 
-    ax.set_title('predicted and observed case numbers')
+    ax.set_title('predicted and observed case numbers for\n' + region)
     ax.set_xlabel('day count')
     ax.set_ylabel('case number')
 
@@ -207,14 +208,14 @@ if __name__ == "__main__":
 
     # Parse commmand line arguments
     parser = argparse.ArgumentParser()
-    parser.add_argument("-r", metavar="REGION", default="china",
-                        dest="region",
-                        help="specify region for which to solve model")
+    parser.add_argument("-r", metavar="COUNTRY", default="CHINA",
+                        dest="country",
+                        help="specify country for which to solve model")
     args = parser.parse_args()
 
     # Estimate parameters for SIR model and display results
-    region = args.region
-    C = loadData(region)
+    country = args.country
+    C = loadData(country)
     results = parmest(C)
     pp = pprint.PrettyPrinter(indent=4)
     pp.pprint(results)
@@ -223,5 +224,5 @@ if __name__ == "__main__":
     (t, S, I, R) = solveode((results['S'],results['I0'],results['R0']),
                             (results['beta'],results['gamma'],tmax))
     plot_SIR(t, S, I, R)
-    plot_goodness_of_fit(t, S, I, R, range(len(C)), C)
+    plot_goodness_of_fit(t, S, I, R, range(len(C)), C,country)
     plt.show()
