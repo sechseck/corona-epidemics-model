@@ -22,7 +22,7 @@ def loadData(country):
     """
     filename = r'./case_numbers.csv'
     data = pd.read_csv(filename, delimiter=';', comment="#")
-    C = data[data['country'] == country]['cases'].to_numpy()
+    C = data[data['region'] == country]['cases'].to_numpy()
 
     # If no cases are found, throw an error
     if len(C) == 0:
