@@ -245,7 +245,7 @@ if __name__ == "__main__":
 
     # Parse commmand line arguments
     parser = argparse.ArgumentParser()
-    parser.add_argument("-r", metavar="COUNTRY", default="GERMANY",
+    parser.add_argument("-r", metavar="COUNTRY", default="CHINA",
                         dest="country",
                         help="specify country for which to solve model")
     args = parser.parse_args()
