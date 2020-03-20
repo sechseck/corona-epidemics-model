@@ -37,11 +37,11 @@ python corona_sir.py
 ```
 The numbers from the console should be equal or very similar to:
 ```
-{   'I0': 45,
+{   'I0': 86,
     'R0': 0,
-    'S': 510528.35167517845,
-    'beta': 2.5199541786810506,
-    'gamma': 2.3057306408837537}
+    'S': 261177.81657711515,
+    'beta': 1.388808907936211,
+    'gamma': 1.1603442769143335}
 ```
 If you get these results, you have a working setup. Congratulations!
 
