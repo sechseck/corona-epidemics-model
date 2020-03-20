@@ -95,7 +95,6 @@ The latest version is available from [github](https://github.com/sechseck/epidem
 ## Authors
 
 - **sechseck:** [sechseck](https://github.com/sechseck)
-- **fsch2:** [fsch2](https://github.com/fsch2)
 
 ## License
 
