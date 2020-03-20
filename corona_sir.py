@@ -21,7 +21,7 @@ def loadData(country):
     :returns: Case data for region as pandas DataFrame
     """
     filename = r'./case_numbers.csv'
-    data = pd.read_csv(filename, delimiter=';', comment="#")
+    data = pd.read_csv(filename, delimiter=',', comment="#")
     C = data[data['country'] == country]['cases'].to_numpy()
 
     # If no cases are found, throw an error
@@ -245,7 +245,7 @@ if __name__ == "__main__":
 
     # Parse commmand line arguments
     parser = argparse.ArgumentParser()
-    parser.add_argument("-r", metavar="COUNTRY", default="CHINA",
+    parser.add_argument("-r", metavar="COUNTRY", default="GERMANY",
                         dest="country",
                         help="specify country for which to solve model")
     args = parser.parse_args()
