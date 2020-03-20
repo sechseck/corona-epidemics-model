@@ -5,10 +5,10 @@ import argparse
 import pprint
 
 from scipy.integrate import solve_ivp
-from scipy.optimize import minimize
+from scipy.optimize import minimize,curve_fit
 import pandas as pd
 from numpy.linalg import norm
-from numpy import asarray,hstack
+from numpy import asarray,hstack,exp,log,arange,concatenate
 import matplotlib.pyplot as plt
 from matplotlib import rcParams
 
@@ -22,13 +22,57 @@ def loadData(country):
     """
     filename = r'./case_numbers.csv'
     data = pd.read_csv(filename, delimiter=';', comment="#")
-    C = data[data['region'] == country]['cases'].to_numpy()
+    C = data[data['country'] == country]['cases'].to_numpy()
 
     # If no cases are found, throw an error
     if len(C) == 0:
         print("Found 0 datapoints for region {}, terminating".format(country))
         raise SystemExit(3)
     return C
+
+def stubData(C):
+    """create simulated data based on exponential growth for the first days if first case count is > 1, i.e. first cases have been unobserved
+
+    :param C: the observed case numbers
+    :return: stubC: the simulated case numbers, (a,b,c): the parameters of the exponential function
+    """
+
+    trainingPeriodIdxMax = 5 #the first trainingPeriodIdxMax case numbers will be used to estimate the function (or less if not available)
+    first_sim_case_count = 80
+    trainingPeriod = range(trainingPeriodIdxMax if len(C) > trainingPeriodIdxMax else len(C))
+
+    #fit the function to the data
+    popt, pcov = curve_fit(funcExponential, trainingPeriod, C[trainingPeriod])
+    (a,b,c) = popt
+    #calculate the (negative) simulated date number where case count = first_sim_case_count
+    firstSimDateNumber = int(invFuncExponential(first_sim_case_count,a,b,c))
+    simDateNumbers = arange(firstSimDateNumber,0)
+
+    result = funcExponential(simDateNumbers, *popt).astype(int)
+    parms = {'a':a,'b':b,'c':c}
+
+
+    return {'result': result, 'parms': parms}
+
+def funcExponential(x, a, b, c):
+    """ the generic exponential function used in the curve fitting routine
+    :param x: list of x (datenumber) values for function evaluation
+    :param a: value of function at x == offset
+    :param b: growth factor
+    :param c: x offset
+    :return:
+    """
+    return a * exp(b *(x-c))
+
+def invFuncExponential(y, a, b, c):
+    """the inverse of the exponential function
+    :param y: list of y (case count) values for function evaluation
+    :param a:
+    :param b:
+    :param c:
+    :return:
+    """
+    return 1 / b * log(y / a) + c
 
 
 def parmest(C):
@@ -64,9 +108,7 @@ def parmest(C):
 
 def iniguess(firstCaseCount):
     """Guess initial parameters for parameter estimation
-
     :param firstCaseCount: Number of infected at time t0
-
     :returns: Initial parameters guess for 'beta', 'gamma', 'S',
         'I0', 'R0' in a dict
     """
@@ -88,15 +130,10 @@ def iniguess(firstCaseCount):
 
 def sir_ode(t,SIR,beta,gamma):
     """The SIR  differential equation
-
     :param t: the time variable, not used
-
     :param SIR: current values of S,I,R
-
     :param beta: Model transition probability
-
     :param gamme: Model transisiton probability
-
     :returns: solutions for dS,dI,dR as functions of time
     """
     S = SIR[0]
@@ -213,12 +250,31 @@ if __name__ == "__main__":
                         help="specify country for which to solve model")
     args = parser.parse_args()
 
-    # Estimate parameters for SIR model and display results
+
+    #configuration section
+    minFirstCases = 10 # we will create simulated stub data if the first case count is below this figure #TODO: set this in relation to the current figure, i.e. a ratio
+
+
+    # load data
     country = args.country
     C = loadData(country)
-    results = parmest(C)
+
+    #if the first value of C is too high, create simulated previous values
+    if C[0] > minFirstCases:
+        need2Stub = True
+        stubResults = stubData(C)
+        stubC = stubResults['result']
+        finalC = concatenate((stubC, C))
+    else:
+        need2Stub = False
+        finalC = C
+
+    # calcuate results
+    results = parmest(finalC) #estimate the model
     pp = pprint.PrettyPrinter(indent=4)
     pp.pprint(results)
+
+    # analyze and graph results
     #solve for S,I,R given the estimated parameters Expectation(S0),beta,gamma
     tmax = 2*len(C)
     (t, S, I, R) = solveode((results['S'],results['I0'],results['R0']),
