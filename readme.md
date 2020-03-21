@@ -96,10 +96,6 @@ The latest version is available from [github](https://github.com/sechseck/epidem
 
 - **sechseck:** [sechseck](https://github.com/sechseck)
 
-## Co-Author
-
-- **fsch2:** [fsch2](https://github.com/fsch2)
-
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE.md](https://github.com/sechseck/epidemics/blob/master/license.md) file for details
